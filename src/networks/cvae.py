@@ -100,7 +100,7 @@ class Decoder(nn.Module):
 
 class CVAE(nn.Module):
 
-    def __init__(self, shape_vocab_size=4, color_vocab_size=4, condition_embedding_size=16, hidden_size=16, latent_dim=32):
+    def __init__(self, shape_vocab_size=4, color_vocab_size=4, condition_embedding_size=16, hidden_size=16, latent_dim=32, device='cuda'):
         super().__init__()
 
         #self.conditional_embedder = ShapeEmbeddingRNN(shape_vocab_size, color_vocab_size, condition_embedding_size, hidden_size)
@@ -108,6 +108,7 @@ class CVAE(nn.Module):
 
         self.encoder = Encoder(condition_embedding_size, latent_dim)
         self.decoder = Decoder(condition_embedding_size, latent_dim)
+        self.device = device
 
     def forward(self, image, conditioning_vector, lengths):
 
@@ -127,6 +128,16 @@ class CVAE(nn.Module):
         reconstructed_image = self.decoder(z, conditioning_embedding)
 
         return reconstructed_image, m, log_v
+    
+    def decode(self, conditioning_vector):
+
+        z = torch.randn(1, 32).to(self.device)
+
+        conditioning_embedding = self.conditional_embedder(conditioning_vector)
+
+        reconstructed_image = self.decoder(z, conditioning_embedding.view(1, 16))
+
+        return reconstructed_image
 
 
 if __name__ == '__main__':          

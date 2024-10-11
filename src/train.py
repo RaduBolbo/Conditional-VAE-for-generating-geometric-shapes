@@ -34,13 +34,14 @@ val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size,
 
 model.to(device)
 
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 
 for epoch in range(num_epochs):
     model.train()
     epoch_loss = 0
     epoch_recon_loss = 0
     epoch_kl_loss = 0
+    torch.cuda.empty_cache()
     for batch in tqdm(train_dataloader):
         images, padded_conditioning_vectors, lengths = batch
         
@@ -68,19 +69,21 @@ for epoch in range(num_epochs):
     epoch_recon_loss = 0
     epoch_kl_loss = 0
     model.eval()
-    for batch in tqdm(val_dataloader):
-        images, padded_conditioning_vectors, lengths = batch
-        
-        images = torch.tensor(np.transpose(images, (0, 3, 1, 2)).contiguous(), dtype=torch.float32).to(device)
-        padded_conditioning_vectors = torch.tensor(padded_conditioning_vectors, dtype=torch.float32).to(device)
-        lengths = lengths.to(device)
-        
-        reconstructed_image, m, log_v = model(images, padded_conditioning_vectors, lengths)
-        
-        loss, recon_loss, kl_loss = loss_function(reconstructed_image, images, m, log_v, beta)
-        epoch_loss += loss
-        epoch_recon_loss += recon_loss
-        epoch_kl_loss += kl_loss
+    with torch.no_grad():
+        torch.cuda.empty_cache()
+        for batch in tqdm(val_dataloader):
+            images, padded_conditioning_vectors, lengths = batch
+            
+            images = torch.tensor(np.transpose(images, (0, 3, 1, 2)).contiguous(), dtype=torch.float32).to(device)
+            padded_conditioning_vectors = torch.tensor(padded_conditioning_vectors, dtype=torch.float32).to(device)
+            lengths = lengths.to(device)
+            
+            reconstructed_image, m, log_v = model(images, padded_conditioning_vectors, lengths)
+            
+            loss, recon_loss, kl_loss = loss_function(reconstructed_image, images, m, log_v, beta)
+            epoch_loss += loss
+            epoch_recon_loss += recon_loss
+            epoch_kl_loss += kl_loss
 
     print(f"EVAL Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss.item()/(len(dataset)*batch_size)}, Recon Loss: {epoch_recon_loss.item()/(len(dataset)*batch_size)}, KL Loss: {epoch_kl_loss.item()/(len(dataset)*batch_size)}")
     
