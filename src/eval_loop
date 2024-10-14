@@ -9,12 +9,13 @@
 import torch
 from torch.utils.data import random_split
 from dataset import ShapeDataset, custom_collate_fn
-from networks.cvae_bn import CVAE
+from networks.cvae_bn_one_old import CVAE
 import numpy as np
 from loss import loss_function
 from tqdm import tqdm
 import torchvision.models as models
 import cv2
+import torch.nn.functional as F
 vgg11 = models.vgg11(pretrained=True).features
 for param in vgg11.parameters():
     param.requires_grad = False
@@ -30,16 +31,17 @@ model = CVAE()
 # LOAD STATE DICT IF NEEDED
 model.load_state_dict(torch.load('weights/model_weights_epoch_0.pth'))
 num_epochs = 300
-beta = 1
-#beta = 0.1
+#beta = 1
+beta = 0.01
 batch_size = 32
 
-dataset = ShapeDataset('dataset', 'dataset.json')
+dataset = ShapeDataset('dataset_one', 'dataset_one.json')
 train_size = int(0.8 * len(dataset))
 val_size = len(dataset) - train_size
 train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 
 val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, collate_fn=custom_collate_fn, drop_last=True)
+train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, collate_fn=custom_collate_fn, drop_last=True)
 
 
 model.to(device)
@@ -74,7 +76,10 @@ for epoch in range(num_epochs):
             reconstructed_image = reconstructed_image[0, :, :, :].squeeze(0)
 
             print(reconstructed_image.shape)
+            final_layer = F.sigmoid
+            reconstructed_image = final_layer(reconstructed_image)
             img = cv2.cvtColor(np.uint8(255*np.transpose(reconstructed_image.cpu().detach().numpy(), (1, 2, 0))), cv2.COLOR_RGB2BGR)
+            
 
             cv2.imshow('Image', img)
             cv2.waitKey(0)

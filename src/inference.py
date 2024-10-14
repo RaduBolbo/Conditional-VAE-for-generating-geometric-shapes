@@ -1,13 +1,28 @@
 import torch
 import cv2
-from networks.cvae_bn import CVAE
+from networks.cvae_bn_one_old import CVAE
 import numpy as np
+import torch.nn.functional as F
+
+seed = 42
+torch.manual_seed(seed)
 
 #padded_conditioning_vectors = [0, 1, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2]
 #padded_conditioning_vectors = [0, 1, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2]
 #padded_conditioning_vectors = [0, 1, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2]
 #padded_conditioning_vectors = [2, 2, 2, 2, -1, -1, -1, -1, -1, -1, -1, -1]
-padded_conditioning_vectors = [0, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+#padded_conditioning_vectors = [0, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+
+padded_conditioning_vectors = [[0, 0]]
+#padded_conditioning_vectors = [[0, 1]]
+#padded_conditioning_vectors = [[0, 2]]
+#padded_conditioning_vectors = [[0, 3]]
+
+#padded_conditioning_vectors = [[0, 3]]
+#padded_conditioning_vectors = [[1, 3]]
+#padded_conditioning_vectors = [[2, 3]]
+#padded_conditioning_vectors = [[3, 3]]
 
 
 device = 'cuda'
@@ -18,6 +33,7 @@ model.eval()
 
 
 padded_conditioning_vectors = torch.tensor(padded_conditioning_vectors, dtype=torch.float32).to(device)
+#generated_image = model.decode(padded_conditioning_vectors)
 generated_image = model.decode(padded_conditioning_vectors)
 generated_image = generated_image.squeeze(0)
 
@@ -26,6 +42,8 @@ generated_image = generated_image.squeeze(0)
 
 print(generated_image.shape)
 #img = cv2.cvtColor(np.uint8(np.transpose(generated_image.cpu().detach().numpy(), (1, 2, 0))), cv2.COLOR_RGB2BGR)
+final_layer = F.sigmoid
+generated_image = final_layer(generated_image)
 img = cv2.cvtColor(np.uint8(255*np.transpose(generated_image.cpu().detach().numpy(), (1, 2, 0))), cv2.COLOR_RGB2BGR)
 #img = cv2.cvtColor(np.uint8(255*generated_image.cpu().detach().numpy()), cv2.COLOR_BGR2RGB)
 #img = np.uint8(255*generated_image.cpu().detach().numpy())

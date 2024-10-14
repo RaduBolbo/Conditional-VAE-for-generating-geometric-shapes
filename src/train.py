@@ -9,7 +9,7 @@
 import torch
 from torch.utils.data import random_split
 from dataset import ShapeDataset, custom_collate_fn
-from networks.cvae_bn import CVAE
+from networks.cvae_bn_one_old import CVAE
 import numpy as np
 from loss import loss_function
 from tqdm import tqdm
@@ -29,11 +29,13 @@ model = CVAE()
 # LOAD STATE DICT IF NEEDED
 model.load_state_dict(torch.load('weights/model_weights_epoch_0.pth'))
 num_epochs = 300
+#beta = 1
 beta = 1
-#beta = 0.1
+#lr = 0.000001
+lr = 0.001
 batch_size = 32
 
-dataset = ShapeDataset('dataset', 'dataset.json')
+dataset = ShapeDataset('dataset_one', 'dataset_one.json')
 train_size = int(0.8 * len(dataset))
 val_size = len(dataset) - train_size
 train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
@@ -44,7 +46,7 @@ val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size,
 
 model.to(device)
 
-optimizer = torch.optim.Adam(model.parameters(), lr=0.000001)
+optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
 for epoch in range(num_epochs):
     model.train()
@@ -58,6 +60,7 @@ for epoch in range(num_epochs):
         images = torch.tensor(np.transpose(images, (0, 3, 1, 2)).contiguous(), dtype=torch.float32).to(device)
         padded_conditioning_vectors = torch.tensor(padded_conditioning_vectors, dtype=torch.float32).to(device)
         lengths = lengths.to(device)
+        #print(padded_conditioning_vectors)
         
         reconstructed_image, m, log_v = model(images, padded_conditioning_vectors, lengths)
         
@@ -74,6 +77,7 @@ for epoch in range(num_epochs):
     
     if epoch % 5 == 0:
         torch.save(model.state_dict(), f'weights/model_weights_epoch_{epoch}.pth')
+    #torch.save(model.state_dict(), f'weights/model_weights_epoch_{epoch}.pth')
 
     epoch_loss = 0
     epoch_recon_loss = 0

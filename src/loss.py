@@ -61,6 +61,7 @@ class DiceScoreLoss(nn.Module):
 
 def loss_function(reconstructed_image, original_image, m, log_v, beta, vgg, algo='ssim'):
 
+    '''
     # if algo == 'mse':
     #     recon_loss = F.mse_loss(reconstructed_image, original_image, reduction='mean')
     # elif algo == 'ssim':
@@ -84,8 +85,13 @@ def loss_function(reconstructed_image, original_image, m, log_v, beta, vgg, algo
     #print('dice_loss: ', dice_loss)
 
     recon_loss = l1_loss + ssim_loss + vgg_loss + dice_loss
+    '''
+    criterion = nn.CrossEntropyLoss()
+    recon_loss = criterion(reconstructed_image, original_image)
+    #print(recon_loss)
 
-    kl_loss = -0.5 * torch.sum(1 + log_v - m.pow(2) - log_v.exp())
+    kl_loss = -0.5 * torch.mean(1 + log_v - m.pow(2) - log_v.exp())
+    #print(kl_loss)
     loss = recon_loss + beta * kl_loss
 
     return loss, recon_loss, kl_loss

@@ -41,11 +41,7 @@ def custom_collate_fn(batch):
 
     max_len = max(len(cond) for cond in conditioning_vectors)
 
-    padded_conditioning_vectors = torch.tensor(
-        [cond + [-1] * (max_len - len(cond)) for cond in conditioning_vectors] # **** 0 is alsoa  code for shape and color, but I hope I can cutt this off by using masking
-    )
-
-    return images, padded_conditioning_vectors, lengths
+    return images, conditioning_vectors, lengths
 
 if __name__ == '__main__':          
     dataset = ShapeDataset('dataset', 'dataset.json')
