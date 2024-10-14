@@ -4,6 +4,7 @@ import json
 import cv2
 import os
 from PIL import Image, ImageDraw
+from tqdm import tqdm
 
 random.seed(42)
 np.random.seed(42)
@@ -59,8 +60,8 @@ def draw_shape(draw, shape_type, color, position, size):
 
 dataset_info = []
 
-for img_id in range(NUM_EXAMPLES):
-    img = Image.new('RGB', (IMG_SIZE, IMG_SIZE), color=(255, 255, 255))
+for img_id in tqdm(range(NUM_EXAMPLES)):
+    img = Image.new('RGB', (IMG_SIZE, IMG_SIZE), color=(0, 0, 0))
     draw = ImageDraw.Draw(img)
 
     num_shapes = random.randint(1, MAX_SHAPES)

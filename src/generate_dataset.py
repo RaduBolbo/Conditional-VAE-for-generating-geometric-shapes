@@ -9,13 +9,16 @@ from PIL import Image, ImageDraw
 random.seed(42)
 np.random.seed(42)
 
-generated_dataset_path = '/home/radu-bolborici/fac/IA3/lecture_IA3/lecture_project_IA3/Conditional-VAE-for-generating-geometric-shapes/dataset'
-json_path = '/home/radu-bolborici/fac/IA3/lecture_IA3/lecture_project_IA3/Conditional-VAE-for-generating-geometric-shapes/dataset.json'
+generated_dataset_path = '/home/radu-bolborici/fac/IA3/lecture_IA3/lecture_project_IA3/Conditional-VAE-for-generating-geometric-shapes/dataset_one'
+json_path = '/home/radu-bolborici/fac/IA3/lecture_IA3/lecture_project_IA3/Conditional-VAE-for-generating-geometric-shapes/dataset_one.json'
 
 # Define constants
 IMG_SIZE = 128
-MAX_SHAPES = 6
-NUM_EXAMPLES = 100
+#MAX_SHAPES = 6
+MAX_SHAPES = 1
+#NUM_EXAMPLES = 100
+NUM_EXAMPLES = 1000
+min_size, max_size = 20, 80
 
 # Shape and color identifiers
 SHAPE_IDS = {'square': 0, 'circle': 1, 'triangle': 2, 'hexagon': 3}
@@ -65,7 +68,7 @@ for img_id in range(NUM_EXAMPLES):
         shape = random.choice(list(SHAPE_IDS.keys()))
         color = random.choice(list(COLOR_IDS.keys()))
 
-        size = random.randint(10, 30)
+        size = random.randint(min_size, max_size)
         position = (random.randint(0, IMG_SIZE - size), random.randint(0, IMG_SIZE - size))
 
         draw_shape(draw, shape, COLORS[COLOR_IDS[color]], position, size)
