@@ -29,7 +29,7 @@ torch.manual_seed(seed)
 device = 'cuda'
 
 model = CVAE().to(device)
-model.load_state_dict(torch.load('weights/model_weights_epoch_0_almost_works_small_PRELU_beta_0,1.pth'))
+model.load_state_dict(torch.load('weights/model_weights_epoch_0.pth'))
 model.eval()
 
 

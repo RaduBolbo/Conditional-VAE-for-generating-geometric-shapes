@@ -9,7 +9,8 @@
 import torch
 from torch.utils.data import random_split
 from dataset import ShapeDataset, custom_collate_fn
-from networks.cvae_bn_one_old import CVAE
+from networks.cvae_bn_one_small import CVAE
+#from networks.cvae_bn_one_old import CVAE
 import numpy as np
 from loss import loss_function
 from tqdm import tqdm
@@ -27,14 +28,14 @@ torch.manual_seed(seed)
 device  ='cuda'
 model = CVAE()
 # LOAD STATE DICT IF NEEDED
-model.load_state_dict(torch.load('weights/model_weights_epoch_50.pth'))
+model.load_state_dict(torch.load('weights/model_weights_epoch_0_almost_works_small_PRELU_beta_1.pth'))
 #model.load_state_dict(torch.load('weights/model_weights_epoch_55_it_begins_to_work.pth'))
 num_epochs = 300
 #beta = 1
-beta = 1
+beta = 0.1
 #lr = 0.000001
 #lr = 0.001 # THIS WAS ALMOST WORKING
-lr = 0.00003
+lr = 0.001
 batch_size = 32
 
 dataset = ShapeDataset('dataset_one', 'dataset_one.json')
