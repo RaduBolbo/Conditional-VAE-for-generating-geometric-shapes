@@ -30,9 +30,9 @@ torch.manual_seed(seed)
 
 
 device  ='cuda'
-model = CVAE()
+model = CVAE(latent_dim=12)
 # LOAD STATE DICT IF NEEDED
-model.load_state_dict(torch.load('weights/model_weights_epoch_0_almost_works_smallerlatent.pth'))
+model.load_state_dict(torch.load('weights/model_weights_epoch_0_almost_works_smallerlatent_12_beta_0,2.pth'))
 num_epochs = 300
 #beta = 1
 beta = 0.01

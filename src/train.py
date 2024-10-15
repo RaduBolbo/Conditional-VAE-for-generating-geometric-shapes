@@ -9,7 +9,7 @@
 import torch
 from torch.utils.data import random_split
 from dataset import ShapeDataset, custom_collate_fn
-from networks.cvae_bn_one_small_smallerlatent import CVAE
+from networks.cvae_bn_one_small_smallerlatent_deeper import CVAE
 #from networks.cvae_bn_one_small import CVAE
 #from networks.cvae_bn_one_old import CVAE
 import numpy as np
@@ -27,13 +27,14 @@ torch.manual_seed(seed)
 
 
 device  ='cuda'
-model = CVAE()
+model = CVAE(latent_dim=12) # latent_dim was originally 32 (bad results), then lowered to 16 (better results) and then to 8 (?)
 # LOAD STATE DICT IF NEEDED
 #model.load_state_dict(torch.load('weights/model_weights_epoch_0_almost_works_small_PRELU_beta_1.pth'))
 #model.load_state_dict(torch.load('weights/model_weights_epoch_55_it_begins_to_work.pth'))
 num_epochs = 300
-beta = 1
+#beta = 1
 #beta = 0.1
+beta = 0.2
 #lr = 0.000001
 #lr = 0.001 # THIS WAS ALMOST WORKING
 lr = 0.001

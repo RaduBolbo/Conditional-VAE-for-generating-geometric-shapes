@@ -6,8 +6,8 @@ from networks.cvae_bn_one_small_smallerlatent import CVAE
 import numpy as np
 import torch.nn.functional as F
 
-#seed = 42 # to try: 42, 41, 45
-#torch.manual_seed(seed)
+seed = 42 # to try: 42, 41, 45
+torch.manual_seed(seed)
 
 #padded_conditioning_vectors = [0, 1, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2]
 #padded_conditioning_vectors = [0, 1, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2]
@@ -15,16 +15,14 @@ import torch.nn.functional as F
 #padded_conditioning_vectors = [2, 2, 2, 2, -1, -1, -1, -1, -1, -1, -1, -1]
 #padded_conditioning_vectors = [0, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 
-seed = 42 # to try: 42, 41, 45
-torch.manual_seed(seed)
+# seed to try: 42, 41, 45
 #padded_conditioning_vectors = [[0, 0]] # red square
 #padded_conditioning_vectors = [[0, 1]] # blue square
 #padded_conditioning_vectors = [[0, 2]] # green square
 #padded_conditioning_vectors = [[0, 3]] # yellow square
 
-seed = 41 # to try: 41
-torch.manual_seed(seed)
-padded_conditioning_vectors = [[0, 3]] # yellow square
+# seed to try: 41
+#padded_conditioning_vectors = [[0, 3]] # yellow square
 #padded_conditioning_vectors = [[1, 3]] # yellow circle
 #padded_conditioning_vectors = [[2, 3]] # yellow triangle
 #padded_conditioning_vectors = [[3, 3]] # yellow hexagon
@@ -32,8 +30,8 @@ padded_conditioning_vectors = [[0, 3]] # yellow square
 
 device = 'cuda'
 
-model = CVAE().to(device)
-model.load_state_dict(torch.load('weights/model_weights_epoch_0_almost_works_smallerlatent.pth'))
+model = CVAE(latent_dim=12).to(device)
+model.load_state_dict(torch.load('weights/model_weights_epoch_0_almost_works_smallerlatent_12_beta_0,2.pth'))
 model.eval()
 
 
