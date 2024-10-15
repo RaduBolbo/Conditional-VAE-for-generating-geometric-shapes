@@ -56,7 +56,7 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module):
-    def __init__(self, condition_embedding_size=16, latent_dim=32):
+    def __init__(self, condition_embedding_size=6, latent_dim=32):
         super().__init__()
         self.condition_embedding_size = condition_embedding_size
         self.latent_dim = latent_dim
@@ -111,7 +111,7 @@ class Decoder(nn.Module):
 
 class CVAE(nn.Module):
 
-    def __init__(self, shape_vocab_size=4, color_vocab_size=4, condition_embedding_size=16, hidden_size=16, latent_dim=32, device='cuda'):
+    def __init__(self, shape_vocab_size=4, color_vocab_size=4, condition_embedding_size=6, hidden_size=16, latent_dim=32, device='cuda'):
         super().__init__()
 
         #self.conditional_embedder = ShapeEmbeddingRNN(shape_vocab_size, color_vocab_size, condition_embedding_size, hidden_size)

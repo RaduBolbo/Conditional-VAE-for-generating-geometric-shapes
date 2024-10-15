@@ -14,30 +14,30 @@ class Encoder(nn.Module):
         self.conv_encoder = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, stride=1, padding='same'),
             nn.BatchNorm2d(32),
-            nn.ReLU(),
+            nn.PReLU(),
+            nn.MaxPool2d(2),
+            nn.Conv2d(32, 32, kernel_size=3, stride=1, padding='same'), 
+            nn.BatchNorm2d(32),
+            nn.PReLU(),
+            nn.MaxPool2d(2),
+            nn.Conv2d(32, 32, kernel_size=3, stride=1, padding='same'),
+            nn.BatchNorm2d(32),
+            nn.PReLU(),
             nn.MaxPool2d(2),
             nn.Conv2d(32, 64, kernel_size=3, stride=1, padding='same'), 
             nn.BatchNorm2d(64),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
-            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding='same'),
-            nn.BatchNorm2d(128),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
-            nn.Conv2d(128, 256, kernel_size=3, stride=1, padding='same'), 
-            nn.BatchNorm2d(256),
-            nn.ReLU(),
+            nn.PReLU(),
             nn.MaxPool2d(2),
         )
         self.linear_encoder = nn.Sequential(
             #nn.Linear(256 * 8 * 8 + condition_embedding_size, 512), # ****  de ce nu sunt bune dimensiunile?
-            nn.Linear(16390, 512),
-            nn.BatchNorm1d(512),
-            nn.ReLU(),
+            nn.Linear(4102, 64),
+            nn.BatchNorm1d(64),
+            nn.PReLU(),
         )
 
-        self.fc_m = nn.Linear(512, latent_dim)  # Mean
-        self.fc_log_v = nn.Linear(512, latent_dim)  # Log variance
+        self.fc_m = nn.Linear(64, latent_dim)  # Mean
+        self.fc_log_v = nn.Linear(64, latent_dim)  # Log variance
 
     def forward(self, image, condition):
         # 1) Pass the image through the conv encoder
@@ -63,29 +63,31 @@ class Decoder(nn.Module):
         self.final_layer = F.sigmoid
 
         self.conv_decoder = nn.Sequential(
-        nn.ConvTranspose2d(256, 128, kernel_size=3, stride=1, padding=1), # 8x8 -> 16x16
-        nn.BatchNorm2d(128),
-        nn.ReLU(),
-        nn.Upsample(scale_factor=2, mode='nearest'),
-        nn.ConvTranspose2d(128, 64, kernel_size=3, stride=1, padding=1),  # 16x16 -> 32x32
+        nn.ConvTranspose2d(128, 64, kernel_size=3, stride=1, padding=1), # 8x8 -> 16x16
         nn.BatchNorm2d(64),
-        nn.ReLU(),
+        nn.PReLU(),
         nn.Upsample(scale_factor=2, mode='nearest'),
-        nn.ConvTranspose2d(64, 32, kernel_size=3, stride=1, padding=1),   # 32x32 -> 64x64
+        nn.ConvTranspose2d(64, 32, kernel_size=3, stride=1, padding=1),  # 16x16 -> 32x32
         nn.BatchNorm2d(32),
-        nn.ReLU(),
+        nn.PReLU(),
+        nn.Upsample(scale_factor=2, mode='nearest'),
+        nn.ConvTranspose2d(32, 32, kernel_size=3, stride=1, padding=1),   # 32x32 -> 64x64
+        nn.BatchNorm2d(32),
+        nn.PReLU(),
         nn.Upsample(scale_factor=2, mode='nearest'),
         nn.ConvTranspose2d(32, 3, kernel_size=3, stride=1, padding=1),    # 64x64 -> 128x128
-        nn.ReLU(),
+        nn.BatchNorm2d(3),
+        nn.PReLU(),
+        nn.Upsample(scale_factor=2, mode='nearest'),
         )
         self.linear_decoder = nn.Sequential(
             #nn.Linear(latent_dim + condition_embedding_size, 512), # **** why it doesn tworK?
-            nn.Linear(38, 512), # **** why it doesn tworK?
-            nn.BatchNorm1d(512),
-            nn.ReLU(),
-            nn.Linear(512, 256 * 8 * 8),
-            nn.BatchNorm1d(256 * 8 * 8),
-            nn.ReLU(),
+            nn.Linear(latent_dim + condition_embedding_size, 128), # **** why it doesn tworK?
+            nn.BatchNorm1d(128),
+            nn.PReLU(),
+            nn.Linear(128, 128 * 8 * 8),
+            nn.BatchNorm1d(128 * 8 * 8),
+            nn.PReLU(),
         )
 
     def forward(self, z, condition):
@@ -96,7 +98,7 @@ class Decoder(nn.Module):
         x = self.linear_decoder(z)
 
         # 3) reshape the lienar features to the propper 2D image shape
-        x = x.view(x.size(0), 256, 8, 8)
+        x = x.view(x.size(0), 128, 8, 8)
 
         # 4) Pass the latent space ythrough the decoder
         x = self.conv_decoder(x)
@@ -109,7 +111,7 @@ class Decoder(nn.Module):
 
 class CVAE(nn.Module):
 
-    def __init__(self, shape_vocab_size=4, color_vocab_size=4, condition_embedding_size=6, hidden_size=16, latent_dim=32, device='cuda'):
+    def __init__(self, shape_vocab_size=4, color_vocab_size=4, condition_embedding_size=6, hidden_size=16, latent_dim=16, device='cuda'):
         super().__init__()
 
         #self.conditional_embedder = ShapeEmbeddingRNN(shape_vocab_size, color_vocab_size, condition_embedding_size, hidden_size)
@@ -117,6 +119,7 @@ class CVAE(nn.Module):
 
         self.encoder = Encoder(condition_embedding_size, latent_dim)
         self.decoder = Decoder(condition_embedding_size, latent_dim)
+        self.latent_dim = latent_dim
         self.device = device
 
     def one_hot_embeddings(self, tensor):
@@ -160,7 +163,7 @@ class CVAE(nn.Module):
     
     def decode(self, conditioning_vector):
 
-        z = torch.randn(1, 32).to(self.device)
+        z = torch.randn(1, self.latent_dim).to(self.device)
 
         conditioning_embedding = self.one_hot_embeddings(conditioning_vector).to('cuda')
 

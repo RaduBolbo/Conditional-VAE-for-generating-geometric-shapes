@@ -1,12 +1,13 @@
 import torch
 import cv2
 #from networks.cvae_bn_one_old import CVAE
-from networks.cvae_bn_one_small import CVAE
+#from networks.cvae_bn_one_small import CVAE
+from networks.cvae_bn_one_small_smallerlatent import CVAE
 import numpy as np
 import torch.nn.functional as F
 
-seed = 42
-torch.manual_seed(seed)
+#seed = 42 # to try: 42, 41, 45
+#torch.manual_seed(seed)
 
 #padded_conditioning_vectors = [0, 1, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2]
 #padded_conditioning_vectors = [0, 1, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2]
@@ -14,13 +15,16 @@ torch.manual_seed(seed)
 #padded_conditioning_vectors = [2, 2, 2, 2, -1, -1, -1, -1, -1, -1, -1, -1]
 #padded_conditioning_vectors = [0, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 
-
+seed = 42 # to try: 42, 41, 45
+torch.manual_seed(seed)
 #padded_conditioning_vectors = [[0, 0]] # red square
 #padded_conditioning_vectors = [[0, 1]] # blue square
 #padded_conditioning_vectors = [[0, 2]] # green square
 #padded_conditioning_vectors = [[0, 3]] # yellow square
 
-#padded_conditioning_vectors = [[0, 3]] # yellow square
+seed = 41 # to try: 41
+torch.manual_seed(seed)
+padded_conditioning_vectors = [[0, 3]] # yellow square
 #padded_conditioning_vectors = [[1, 3]] # yellow circle
 #padded_conditioning_vectors = [[2, 3]] # yellow triangle
 #padded_conditioning_vectors = [[3, 3]] # yellow hexagon
@@ -29,7 +33,7 @@ torch.manual_seed(seed)
 device = 'cuda'
 
 model = CVAE().to(device)
-model.load_state_dict(torch.load('weights/model_weights_epoch_0_almost_works_small_PRELU_beta_0,1.pth'))
+model.load_state_dict(torch.load('weights/model_weights_epoch_0_almost_works_smallerlatent.pth'))
 model.eval()
 
 
