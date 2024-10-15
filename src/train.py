@@ -27,12 +27,14 @@ torch.manual_seed(seed)
 device  ='cuda'
 model = CVAE()
 # LOAD STATE DICT IF NEEDED
-model.load_state_dict(torch.load('weights/model_weights_epoch_0.pth'))
+model.load_state_dict(torch.load('weights/model_weights_epoch_50.pth'))
+#model.load_state_dict(torch.load('weights/model_weights_epoch_55_it_begins_to_work.pth'))
 num_epochs = 300
 #beta = 1
 beta = 1
 #lr = 0.000001
-lr = 0.001
+#lr = 0.001 # THIS WAS ALMOST WORKING
+lr = 0.00003
 batch_size = 32
 
 dataset = ShapeDataset('dataset_one', 'dataset_one.json')
@@ -75,9 +77,9 @@ for epoch in range(num_epochs):
 
     print(f"TRAIN Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss.item()/(len(dataset)*batch_size)}, Recon Loss: {epoch_recon_loss.item()/(len(dataset)*batch_size)}, KL Loss: {epoch_kl_loss.item()/(len(dataset)*batch_size)}")
     
-    if epoch % 5 == 0:
-        torch.save(model.state_dict(), f'weights/model_weights_epoch_{epoch}.pth')
-    #torch.save(model.state_dict(), f'weights/model_weights_epoch_{epoch}.pth')
+    # if epoch % 5 == 0:
+    #     torch.save(model.state_dict(), f'weights/model_weights_epoch_{epoch}.pth')
+    torch.save(model.state_dict(), f'weights/model_weights_epoch_{epoch}.pth')
 
     epoch_loss = 0
     epoch_recon_loss = 0

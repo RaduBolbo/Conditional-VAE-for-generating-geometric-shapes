@@ -14,7 +14,7 @@ torch.manual_seed(seed)
 #padded_conditioning_vectors = [0, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 
 
-padded_conditioning_vectors = [[0, 0]]
+#padded_conditioning_vectors = [[0, 0]]
 #padded_conditioning_vectors = [[0, 1]]
 #padded_conditioning_vectors = [[0, 2]]
 #padded_conditioning_vectors = [[0, 3]]
@@ -28,7 +28,7 @@ padded_conditioning_vectors = [[0, 0]]
 device = 'cuda'
 
 model = CVAE().to(device)
-model.load_state_dict(torch.load('weights/model_weights_epoch_0.pth'))
+model.load_state_dict(torch.load('weights/model_weights_epoch_55.pth'))
 model.eval()
 
 
