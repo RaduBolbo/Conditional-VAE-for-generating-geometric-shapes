@@ -30,11 +30,11 @@ device  ='cuda'
 model = CVAE(latent_dim=12) # latent_dim was originally 32 (bad results), then lowered to 16 (better results) and then to 8 (?)
 # LOAD STATE DICT IF NEEDED
 #model.load_state_dict(torch.load('weights/model_weights_epoch_0_almost_works_small_PRELU_beta_1.pth'))
-#model.load_state_dict(torch.load('weights/model_weights_epoch_55_it_begins_to_work.pth'))
+model.load_state_dict(torch.load('weights/model_weights_epoch_42.pth'))
 num_epochs = 300
 #beta = 1
 #beta = 0.1
-beta = 0.2
+beta = 1
 #lr = 0.000001
 #lr = 0.001 # THIS WAS ALMOST WORKING
 lr = 0.001

@@ -2,11 +2,13 @@ import torch
 import cv2
 #from networks.cvae_bn_one_old import CVAE
 #from networks.cvae_bn_one_small import CVAE
-from networks.cvae_bn_one_small_smallerlatent import CVAE
+#from networks.cvae_bn_one_small_smallerlatent import CVAE
+from networks.cvae_bn_one_small_smallerlatent_deeper import CVAE
 import numpy as np
 import torch.nn.functional as F
 
-seed = 42 # to try: 42, 41, 45
+seed = 48 # to try: 42, 43, 48 (INTERESANT la triunghi + confuzie hexagon-cerc)
+# bad seeds: 41, 44 (e interesant -> fragmentari), 45, 47
 torch.manual_seed(seed)
 
 #padded_conditioning_vectors = [0, 1, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2]
@@ -15,23 +17,24 @@ torch.manual_seed(seed)
 #padded_conditioning_vectors = [2, 2, 2, 2, -1, -1, -1, -1, -1, -1, -1, -1]
 #padded_conditioning_vectors = [0, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 
-# seed to try: 42, 41, 45
+# seed to try: 
 #padded_conditioning_vectors = [[0, 0]] # red square
 #padded_conditioning_vectors = [[0, 1]] # blue square
 #padded_conditioning_vectors = [[0, 2]] # green square
 #padded_conditioning_vectors = [[0, 3]] # yellow square
 
-# seed to try: 41
-#padded_conditioning_vectors = [[0, 3]] # yellow square
-#padded_conditioning_vectors = [[1, 3]] # yellow circle
-#padded_conditioning_vectors = [[2, 3]] # yellow triangle
-#padded_conditioning_vectors = [[3, 3]] # yellow hexagon
+# seed to try: 
+#padded_conditioning_vectors = [[0, 1]] # blue square
+#padded_conditioning_vectors = [[1, 1]] # blue circle
+#padded_conditioning_vectors = [[2, 1]] # blue triangle
+#padded_conditioning_vectors = [[3, 1]] # blue hexagon
 
 
 device = 'cuda'
 
 model = CVAE(latent_dim=12).to(device)
-model.load_state_dict(torch.load('weights/model_weights_epoch_0_almost_works_smallerlatent_12_beta_0,2.pth'))
+# ********* MODEL LINK: https://drive.google.com/file/d/1L0Td_hLvjQYyhvLemoI8zFnXgyTY1632/view?usp=sharing
+model.load_state_dict(torch.load('weights/model_weights_epoch_0_KL_anealing_CE+L1+SIM.pth'))
 model.eval()
 
 
