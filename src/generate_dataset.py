@@ -17,7 +17,7 @@ IMG_SIZE = 128
 #MAX_SHAPES = 6
 MAX_SHAPES = 1
 #NUM_EXAMPLES = 100
-NUM_EXAMPLES = 1000
+NUM_EXAMPLES = 100000
 min_size, max_size = 20, 80
 
 # Shape and color identifiers
